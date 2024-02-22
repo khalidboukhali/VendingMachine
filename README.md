@@ -1,5 +1,6 @@
 Vending Machine Implementation   
-This Java project implements a Vending Machine. The Vending Machine supports the following features:   
+This Java project implements a Vending Machine. The Vending Machine supports the following features:
+
 Acceptance of Coins:   
 The machine accepts coins of 1, 2, 5, and 10 dirhams. Notably, the 0.5 dirham coin is not accepted.   
 
