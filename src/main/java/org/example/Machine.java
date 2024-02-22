@@ -11,18 +11,24 @@ import java.util.TreeMap;
 public class Machine {
     private final TreeMap<Product, Integer> products ; // <Product, Quantity>
     private final TreeMap<Coin, Integer> coins;
+    private final TreeMap<Coin, Integer> moneyInserted;
 
     public Machine(){
         this.products = new TreeMap<>();
-        this.coins = new TreeMap<>(Collections.reverseOrder());
+        this.coins = new TreeMap<>(Collections.reverseOrder()); // to order the coins from 10 to 1 (descendent order)
+        this.moneyInserted = new TreeMap<>(Collections.reverseOrder());
     }
 
-    public void addProduct(Product productName, Integer quantity){
+    public void increaseProductQuantity(Product productName, Integer quantity){
         int productQuantity = this.products.getOrDefault(productName, 0);
-        this.products.put(productName, productQuantity+quantity);
+        this.products.put(productName, productQuantity + quantity);
     }
-    public void addCoins(Coin coin, Integer amountOfCoin){
+    public void increaseCoinsAmount(Coin coin, int amountOfCoin){
         this.coins.put(coin, coins.getOrDefault(coin,0)+amountOfCoin);
+    }
+
+    public void insertMoney(Coin coin){
+        this.moneyInserted.put(coin, moneyInserted.getOrDefault(coin, 0) + 1);
     }
 
     public TreeMap<Coin, Integer> getCoins() {
@@ -33,7 +39,7 @@ public class Machine {
         return products;
     }
 
-    public void buyProduct(Product productName, TreeMap<Coin, Integer> moneyInserted){
+    public void buyProduct(Product productName){
         int neededMoney = productName.getPrice();
         int money = getSumOfMoneyInserted(moneyInserted);
 
@@ -58,16 +64,16 @@ public class Machine {
             throw new NoAvailableCoinsException("No available coins for remaining money");
     }
 
-    private int getSumOfMoneyInserted(TreeMap<Coin, Integer> money){
+    private int getSumOfMoneyInserted(TreeMap<Coin, Integer> moneyInserted){
         int sum = 0;
-        for(Map.Entry<Coin, Integer> entry : money.entrySet()){
+        for(Map.Entry<Coin, Integer> entry : moneyInserted.entrySet()){
             sum += entry.getKey().getValue() * entry.getValue();
         }
         return sum;
     }
 
-    private void addToAvailableFunds(TreeMap<Coin, Integer> money){
-        for(Map.Entry<Coin,Integer> entry : money.entrySet()){
+    private void addToAvailableFunds(TreeMap<Coin, Integer> moneyInserted){
+        for(Map.Entry<Coin,Integer> entry : moneyInserted.entrySet()){
             coins.put(entry.getKey(), coins.get(entry.getKey()) + entry.getValue());
         }
     }
@@ -77,13 +83,12 @@ public class Machine {
     }
 
     private boolean isProductExist(Product productName){
-        // product exist and his quantity greater than 0
-        return this.products.containsKey(productName) && this.products.get(productName) > 0;
+        // product exist when his quantity greater than 0
+        return this.products.get(productName) > 0;
     }
     private void decreaseProductQuantity(Product productName){
         int currentQuantity = products.getOrDefault(productName, 0);
         this.products.put(productName, currentQuantity-1);
-
     }
 
 }

@@ -6,7 +6,6 @@ import org.example.exceptions.NoAvailableCoinsException;
 import org.example.exceptions.OutOfStockException;
 import org.junit.jupiter.api.Test;
 
-import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +15,7 @@ public class MachineTest {
         Machine machine = new Machine();
 
         // Add a product
-        machine.addProduct(Product.COCA,  5);
+        machine.increaseProductQuantity(Product.COCA,  5);
 
         // Retrieve product Quantity
         int cocaQuantity = machine.getProductQuantity(Product.COCA);
@@ -28,14 +27,14 @@ public class MachineTest {
     public void testAddCoins() {
         Machine machine = new Machine();
 
-        machine.addCoins(Coin.FIVE, 10);
-        machine.addCoins(Coin.TEN, 5);
+        machine.increaseCoinsAmount(Coin.FIVE, 10);
+        machine.increaseCoinsAmount(Coin.TEN, 5);
 
         assertEquals(10, machine.getCoins().get(Coin.FIVE));
         assertEquals(5, machine.getCoins().get(Coin.TEN));
 
         // Add more coins of the same denomination
-        machine.addCoins(Coin.FIVE, 8);
+        machine.increaseCoinsAmount(Coin.FIVE, 8);
 
         assertEquals(18, machine.getCoins().get(Coin.FIVE));
     }
@@ -43,50 +42,48 @@ public class MachineTest {
     @Test
     public void testBuyProductWithEmptyStock(){
         Machine machine = new Machine();
-        machine.addProduct(Product.COCA, 0);
+        machine.increaseProductQuantity(Product.COCA, 0);
 
-        TreeMap<Coin, Integer> insertedMoney = new TreeMap<>();
-        insertedMoney.put(Coin.TEN,1);
+        machine.insertMoney(Coin.TEN);
 
-        assertThrows(OutOfStockException.class, () -> machine.buyProduct(Product.COCA, insertedMoney) );
+        assertThrows(OutOfStockException.class, () -> machine.buyProduct(Product.COCA) );
     }
 
     @Test
     public void testBuyWithNoAvailableCoins(){
         Machine machine = new Machine();
 
-        machine.addCoins(Coin.TWO, 3);
-        machine.addCoins(Coin.FIVE, 10);
-        machine.addCoins(Coin.TEN, 5);
+        machine.increaseCoinsAmount(Coin.TWO, 3);
+        machine.increaseCoinsAmount(Coin.FIVE, 10);
+        machine.increaseCoinsAmount(Coin.TEN, 5);
 
-        machine.addProduct(Product.COCA, 5);
+        machine.increaseProductQuantity(Product.COCA, 5);
 
-        TreeMap<Coin, Integer> insertedMoney = new TreeMap<>();
-        insertedMoney.put(Coin.TEN,1);
-        insertedMoney.put(Coin.FIVE,1);
-        insertedMoney.put(Coin.TWO,1);
-        insertedMoney.put(Coin.ONE,1);
+        machine.insertMoney(Coin.TEN);
+        machine.insertMoney(Coin.FIVE);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.ONE);
 
-        assertThrows(NoAvailableCoinsException.class, () -> machine.buyProduct(Product.COCA, insertedMoney) );
+        assertThrows(NoAvailableCoinsException.class, () -> machine.buyProduct(Product.COCA));
     }
 
     @Test
     public void testBuyWithAvailableProductAndCoins(){
         Machine machine = new Machine();
 
-        machine.addCoins(Coin.ONE, 4);
-        machine.addCoins(Coin.TWO, 3);
-        machine.addCoins(Coin.FIVE, 10);
-        machine.addCoins(Coin.TEN, 5);
+        machine.increaseCoinsAmount(Coin.ONE, 4);
+        machine.increaseCoinsAmount(Coin.TWO, 3);
+        machine.increaseCoinsAmount(Coin.FIVE, 10);
+        machine.increaseCoinsAmount(Coin.TEN, 5);
 
-        machine.addProduct(Product.COCA, 5);
+        machine.increaseProductQuantity(Product.COCA, 5);
 
-        TreeMap<Coin, Integer> insertedMoney = new TreeMap<>();
-        insertedMoney.put(Coin.TEN,1);
-        insertedMoney.put(Coin.TWO,2);
-        insertedMoney.put(Coin.ONE,1);
+        machine.insertMoney(Coin.TEN);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.ONE);
 
-        machine.buyProduct(Product.COCA, insertedMoney);
+        machine.buyProduct(Product.COCA);
 
         assertEquals(4, machine.getCoins().get(Coin.ONE));
         assertEquals(4, machine.getCoins().get(Coin.TWO));
@@ -98,34 +95,30 @@ public class MachineTest {
     public void testBuyWithoutEnoughMoney(){
         Machine machine = new Machine();
 
-        machine.addCoins(Coin.TWO, 3);
-        machine.addCoins(Coin.FIVE, 10);
-        machine.addCoins(Coin.TEN, 5);
+        machine.increaseProductQuantity(Product.COCA, 5);
 
-        machine.addProduct(Product.COCA, 5);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.ONE);
 
-        TreeMap<Coin, Integer> insertedMoney = new TreeMap<>();
-        insertedMoney.put(Coin.TWO,2);
-        insertedMoney.put(Coin.ONE,1);
-
-        assertThrows(InsufficientFundsException.class, () -> machine.buyProduct(Product.COCA, insertedMoney) );
+        assertThrows(InsufficientFundsException.class, () -> machine.buyProduct(Product.COCA) );
     }
 
     @Test
     public void testDecreasingProductQuantityAfterBuying(){
         Machine machine = new Machine();
 
-        machine.addCoins(Coin.TWO, 3);
-        machine.addCoins(Coin.FIVE, 10);
-        machine.addCoins(Coin.TEN, 5);
+        machine.increaseCoinsAmount(Coin.TWO, 3);
+        machine.increaseCoinsAmount(Coin.FIVE, 10);
+        machine.increaseCoinsAmount(Coin.TEN, 5);
 
-        machine.addProduct(Product.COCA, 5);
+        machine.increaseProductQuantity(Product.COCA, 5);
 
-        TreeMap<Coin, Integer> insertedMoney = new TreeMap<>();
-        insertedMoney.put(Coin.TEN,1);
-        insertedMoney.put(Coin.TWO,2);
+        machine.insertMoney(Coin.TEN);
+        machine.insertMoney(Coin.TWO);
+        machine.insertMoney(Coin.TWO);
 
-        machine.buyProduct(Product.COCA, insertedMoney);
+        machine.buyProduct(Product.COCA);
 
         assertEquals(4, machine.getProducts().get(Product.COCA));
     }
