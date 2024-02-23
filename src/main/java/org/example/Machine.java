@@ -48,19 +48,26 @@ public class Machine {
         if(money < neededMoney)
             throw new InsufficientFundsException("Your money not enough to buy this product");
 
-        int remainingMoney = money - neededMoney;
-        for(Map.Entry<Coin,Integer> entry : coins.entrySet()){
-            int neededCoins = remainingMoney / entry.getKey().getValue();
-            int tackingCoins = Math.min(entry.getValue(), neededCoins);
-            this.coins.put(entry.getKey(), entry.getValue()-tackingCoins);
-            remainingMoney -= tackingCoins* entry.getKey().getValue();
-            if(remainingMoney == 0) {
-                decreaseProductQuantity(productName);
-                addToAvailableFunds(moneyInserted);
-                break;
+        boolean isChangePossible = true;
+        int[] piecesOfMoney = {10,5,2,1};
+        for (int pieceOfMoney: piecesOfMoney) {
+            int remainingMoney = money - neededMoney;
+            for(Map.Entry<Coin,Integer> entry : coins.entrySet()){
+                if(entry.getKey().getValue() <= pieceOfMoney){
+                    int neededCoins = remainingMoney / entry.getKey().getValue();
+                    int tackingCoins = Math.min(entry.getValue(), neededCoins);
+                    remainingMoney -= tackingCoins * entry.getKey().getValue();
+                    if(remainingMoney == 0) {
+                        isChangePossible = false;
+                        this.coins.put(entry.getKey(), entry.getValue()-tackingCoins);
+                        decreaseProductQuantity(productName);
+                        addToAvailableFunds(moneyInserted);
+                    }
+                }
             }
+            if(!isChangePossible) break;
         }
-        if(remainingMoney != 0)
+        if(isChangePossible)
             throw new NoAvailableCoinsException("No available coins for remaining money");
     }
 

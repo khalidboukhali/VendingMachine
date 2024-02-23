@@ -71,24 +71,20 @@ public class MachineTest {
     public void testBuyWithAvailableProductAndCoins(){
         Machine machine = new Machine();
 
-        machine.increaseCoinsAmount(Coin.ONE, 4);
-        machine.increaseCoinsAmount(Coin.TWO, 3);
+        machine.increaseCoinsAmount(Coin.TWO, 4);
         machine.increaseCoinsAmount(Coin.FIVE, 10);
         machine.increaseCoinsAmount(Coin.TEN, 5);
 
-        machine.increaseProductQuantity(Product.COCA, 5);
+        machine.increaseProductQuantity(Product.BUENO, 5);
 
         machine.insertMoney(Coin.TEN);
-        machine.insertMoney(Coin.TWO);
-        machine.insertMoney(Coin.TWO);
-        machine.insertMoney(Coin.ONE);
+        machine.insertMoney(Coin.TEN);
 
-        machine.buyProduct(Product.COCA);
+        machine.buyProduct(Product.BUENO);
 
-        assertEquals(4, machine.getCoins().get(Coin.ONE));
-        assertEquals(4, machine.getCoins().get(Coin.TWO));
-        assertEquals(9, machine.getCoins().get(Coin.FIVE));
-        assertEquals(6, machine.getCoins().get(Coin.TEN)); // increased because user insert one 10
+        assertEquals(0, machine.getCoins().get(Coin.TWO));
+        assertEquals(10, machine.getCoins().get(Coin.FIVE));
+        assertEquals(7, machine.getCoins().get(Coin.TEN)); // increased because user insert one 10
     }
 
     @Test
